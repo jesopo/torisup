@@ -104,7 +104,7 @@ async def loop(
             diff   = str(round(time.monotonic()-(success[service_name]), 2))
 
             if match:
-                if fails[service_name]:
+                if fails[service_name] > 1:
                     out = f"BACK: '{service_name}' reconnected after {fails[service_name]} failures"
                     if success[service_name]:
                         out += f" (down {diff} seconds)"
