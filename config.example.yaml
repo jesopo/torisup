@@ -1,9 +1,12 @@
 server: chat.freenode.net:+6697
 nickname: mybot
 channel: "##mychannel"
-#password: hunter2
+# how frequently to check hidden services, in seconds
 interval: 120
+# optional server password
+#password: hunter2
 
+# optional SASL PLAIN details
 #sasl:
 #  username: mybot
 #  password: hunter3
@@ -12,7 +15,9 @@ services:
   "freenode v2":
     host: freenodeok2gncmy.onion
     port: 6667
+    # data to send to the hidden service
     send: "USER u s e r\r\n"
+    # what the first line we read from the hidden service should be
     read: ":zettel.freenode.net NOTICE * :*** Looking up your hostname..."
 
   "freenode v3":
