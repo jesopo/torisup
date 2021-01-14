@@ -1,0 +1,22 @@
+server: chat.freenode.net:+6697
+nickname: mybot
+channel: "##mychannel"
+#password: hunter2
+interval: 120
+
+#sasl:
+#  username: mybot
+#  password: hunter3
+
+services:
+  "freenode v2":
+    host: freenodeok2gncmy.onion
+    port: 6667
+    send: "USER u s e r\r\n"
+    read: ":zettel.freenode.net NOTICE * :*** Looking up your hostname..."
+
+  "freenode v3":
+    host: ajnvpgl6prmkb7yktvue6im5wiedlz2w32uhcwaamdiecdrfpwwgnlqd.onion
+    port: 6667
+    send: "USER u s e r\r\n"
+    read: ":zettel.freenode.net NOTICE * :*** Looking up your hostname..."
