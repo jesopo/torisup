@@ -117,7 +117,7 @@ async def loop(
 
             else:
                 if banner is not None:
-                    stderr.write(f"unexpected banner received for '{service_name}': {banner}\n")
+                    await _report(f"WARN: '{service_name}' unexpected banner: {banner}")
 
                 fails[service_name] += 1
                 our_fails = fails[service_name]
