@@ -67,7 +67,10 @@ async def _get_banner(
                     await writer.drain()
 
                 while not b"\n" in buff:
-                    buff += await reader.read(1024)
+                    data = await reader.read(1024)
+                    buff += data
+                    if not data:
+                        break
                 return buff.split(b"\n", 1)[0].rstrip(b"\r").decode("utf8")
             else:
                 stderr.write("failed to handshake\n")
