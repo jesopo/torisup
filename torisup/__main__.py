@@ -26,10 +26,13 @@ async def main():
         username, password = config.sasl
         params.sasl = SASLUserPass(username, password)
 
-    bot = Bot()
+    successes: Dict[str, float] = {n: 0.0 for n in config.services.keys()}
+    fails:     Dict[str, int] =   {n: 0   for n in config.services.keys()}
+
+    bot = Bot(successes, fails)
     await bot.add_server("server", params)
     await asyncio.wait([
-        loop(bot, config),
+        loop(bot, config, successes, fails),
         bot.run()
     ])
 

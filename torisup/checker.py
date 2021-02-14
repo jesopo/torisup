@@ -1,7 +1,7 @@
 import asyncio, struct, time
 from asyncio import StreamReader, StreamWriter
 from sys     import stderr
-from typing  import Optional
+from typing  import Dict, Optional
 
 from irctokens     import build
 from ircrobots     import Bot as BaseBot
@@ -77,17 +77,17 @@ async def _get_banner(
         stderr.write(f"{type(e)} {str(e)}\n")
 
 async def loop(
-        bot:    BaseBot,
-        config: Config):
+        bot:       BaseBot,
+        config:    Config,
+        successes: Dict[str, float],
+        fails:     Dict[str, int]):
 
     async def _report(out: str):
         if bot.servers:
             server = list(bot.servers.values())[0]
             await server.send(build("PRIVMSG", [config.channel, out]))
 
-    start   = time.monotonic()
-    success: Dict[str, float] = {n: 0.0 for n in config.services.keys()}
-    fails:   Dict[str, int] =   {n: 0   for n in config.services.keys()}
+    start = time.monotonic()
 
     while True:
         # make sure each connection attempt is at an INTERVAL
@@ -101,19 +101,19 @@ async def loop(
 
             banner = await _get_banner(service.host, service.port, service.send, 20)
             match  = banner == service.read
-            diff   = str(round(time.monotonic()-(success[service_name]), 2))
+            diff   = str(round(time.monotonic()-(successes[service_name]), 2))
 
             if match:
                 if fails[service_name] > 1:
                     out = f"BACK: '{service_name}' reconnected after {fails[service_name]} failures"
-                    if success[service_name]:
+                    if successes[service_name]:
                         out += f" (down {diff} seconds)"
                     await _report(out)
-                elif not success[service_name]:
+                elif not successes[service_name]:
                     await _report(f"GOOD: '{service_name}' is happy")
 
                 fails[service_name]   = 0
-                success[service_name] = time.monotonic()
+                successes[service_name] = time.monotonic()
 
             else:
                 if banner is not None:
@@ -128,6 +128,6 @@ async def loop(
                     await _report(f"DOWN: '{service_name}' failed to check in twice")
                 elif (our_fails % 5) == 0:
                     out = f"DOWN: '{service_name}' failing to check in after {our_fails} tries"
-                    if success[service_name]:
+                    if successes[service_name]:
                         out += f" (last seen {diff} seconds ago)"
                     await _report(out)
